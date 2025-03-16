@@ -17,7 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from core.views import register, user_login, user_logout
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("", include("weather.urls")),
+    path("login/", user_login, name="login"),
+    path("logout/", user_logout, name="logout"),
+     path('register/', register, name='register'),
+    path("dashboard/", include("weather.urls")),
 ]

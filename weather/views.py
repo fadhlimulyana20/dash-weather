@@ -1,6 +1,7 @@
 import requests
 from django.shortcuts import render
 from .models import Weather
+from django.contrib.auth.decorators import login_required
 
 API_KEY = "c92f72b9b2b525803e5451eb76ecb95e"
 
@@ -23,6 +24,7 @@ def get_weather_data(city):
         "weather_condition": weather_res["current"]["weather"][0]["description"],
     }
 
+@login_required
 def fetch_and_store_weather(request):
     if request.method == "POST":
         city = request.POST.get("city")
