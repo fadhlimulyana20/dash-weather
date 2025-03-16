@@ -20,10 +20,15 @@ def user_login(request):
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
+        print(form.data)
         if form.is_valid():
             user = form.save()
             login(request, user)  # Auto-login after registration
             return redirect('dashboard')  # Redirect to the protected dashboard
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field} - {error}")
     else:
         form = RegisterForm()
     
