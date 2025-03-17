@@ -5,6 +5,9 @@ from django.contrib import messages
 
 from core.forms import RegisterForm
 
+def index_view(request):
+    return render(request, "home/index.html")
+
 def user_login(request):
     if request.method == "POST":
         username = request.POST["username"]
