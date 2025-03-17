@@ -33,7 +33,15 @@ def fetch_and_store_weather(request):
         city = request.POST.get("city")
         data = get_weather_data(city)
         if data:
-            Weather.objects.create(**data)
+            weather = Weather.objects.filter(city__iexact=city).first()
+            if weather:
+                weather.temperature = data['temperature']
+                weather.humidity = data["humidity"]
+                weather.wind_speed = data["wind_speed"]
+                weather.weather_condition = data["weather_condition"]
+                weather.save()
+            else:
+                Weather.objects.create(**data)
 
     weather_data = Weather.objects.all().order_by("-updated_at")
     return render(request, "weather/dashboard.html", {"weather_data": weather_data})
