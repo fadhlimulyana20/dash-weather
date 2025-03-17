@@ -1,7 +1,10 @@
 import requests
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+
+from weather.task import update_weather_data
 from .models import Weather
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 API_KEY = "c92f72b9b2b525803e5451eb76ecb95e"
 
@@ -32,5 +35,13 @@ def fetch_and_store_weather(request):
         if data:
             Weather.objects.create(**data)
 
-    weather_data = Weather.objects.all().order_by("-timestamp")
+    weather_data = Weather.objects.all().order_by("-updated_at")
     return render(request, "weather/dashboard.html", {"weather_data": weather_data})
+
+def update_weather(request):
+    cities = Weather.objects.values_list("city", flat=True).distinct()
+    
+    for city in cities:
+        update_weather_data.delay(city)
+    messages.success(request, "Weather update started! Check back in a few moments.")
+    return redirect("dashboard")

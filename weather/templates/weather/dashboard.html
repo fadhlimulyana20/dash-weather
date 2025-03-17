@@ -5,72 +5,131 @@
 {% endblock %}
 
 {% block content %}
-    <div class="lg:max-w-screen-lg lg:px-8 px-4 mx-auto py-20">
-        <h1 class="text-3xl font-bold mb-5">Weather Dashboard</h1>
+<div class="lg:max-w-screen-lg lg:px-8 px-4 mx-auto py-20">
+    <h1 class="text-3xl font-bold mb-5">Weather Dashboard</h1>
 
-        <form method="post" class="mb-5">
-            {% csrf_token %}
-            <div class="flex space-x-2">
-                <input
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-                    type="text" name="city" placeholder="Enter city" required>
-                <button type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Fetch
-                    Weather</button>
+    {% if messages %}
+    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-2">
+        {% for message in messages %}
+        <div id="toast-{{ forloop.counter }}"
+            class="flex items-center w-full max-w-xs p-4 mb-2 text-gray-500 bg-white rounded-lg shadow-md" role="alert">
+            <div
+                class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500 bg-green-100 rounded-lg">
+                ✅
             </div>
-        </form>
+            <div class="ml-3 text-sm font-normal">{{ message }}</div>
+            <button type="button"
+                class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8"
+                onclick="removeToast('{{ forloop.counter }}')">
+                ✖
+            </button>
+        </div>
+        {% endfor %}
+    </div>
 
+    <script>
+        function removeToast(id) {
+            document.getElementById('toast-' + id).remove();
+        }
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            document.querySelectorAll("#toast-container div").forEach(toast => {
+                toast.remove();
+            });
+        }, 3000);
+    </script>
+    {% endif %}
+
+    <form method="post" class="mb-5">
+        {% csrf_token %}
+        <div class="flex space-x-2">
+            <input
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
+                type="text" name="city" placeholder="Enter city" required>
+            <button type="submit"
+                class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Fetch
+                Weather</button>
+        </div>
+    </form>
+
+    <div class="flex justify-between item-center flex-wrap mb-2">
         <h2 class="text-xl font-bold mb-4">Stored Weather Data</h2>
-
-        <div class="relative overflow-x-auto">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3">
-                            City
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Temperature (°C)
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Humidity (%)
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Wind Speed (m/s)
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Condition
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                            Timestamp
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for data in weather_data %}
-                    <tr class="bg-white border-b border-gray-200">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                            {{ data.city }}
-                        </th>
-                        <td class="px-6 py-4">
-                            {{ data.temperature }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ data.humidity }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ data.wind_speed }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ data.weather_condition }}
-                        </td>
-                        <td class="px-6 py-4">
-                            {{ data.timestamp }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="flex space-x-2">
+            <form action="{% url 'update_weather' %}" method="post">
+                {% csrf_token %}
+                <button type="submit"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center">
+                    Update Weather Data
+                </button>
+            </form>
+            <div>
+                <button onclick="refreshPage()"
+                    class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm w-full sm:w-auto px-2 py-1 text-center">
+                    Refresh Weather
+                </button>
+            </div>
         </div>
     </div>
+
+    <div class="relative overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        City
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Temperature (°C)
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Humidity (%)
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Wind Speed (m/s)
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Condition
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Last Update
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in weather_data %}
+                <tr class="bg-white border-b border-gray-200">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                        {{ data.city }}
+                    </th>
+                    <td class="px-6 py-4">
+                        {{ data.temperature }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ data.humidity }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ data.wind_speed }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ data.weather_condition }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ data.updated_at }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function refreshPage() {
+        alert("Refreshing weather data...");
+        setTimeout(() => {
+            location.reload();
+        }, 1000); // 1-second delay before reload
+    }
+</script>
+
 {% endblock %}
