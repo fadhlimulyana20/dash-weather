@@ -1,17 +1,11 @@
-{% load static %}
+{% extends 'base/base.html' %}
 
-<!DOCTYPE html>
-<html lang="en">
+{% block head %}
+<title>Weather</title>
+{% endblock %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Dashboard</title>
-    <link rel="stylesheet" href="{% static '/output.css' %}" />
-</head>
-
-<body>
-    <div class="lg:max-w-screen-lg lg:px-8 px-4 mx-auto py-5">
+{% block content %}
+    <div class="lg:max-w-screen-lg lg:px-8 px-4 mx-auto py-20">
         <h1 class="text-3xl font-bold mb-5">Weather Dashboard</h1>
 
         <form method="post" class="mb-5">
@@ -79,6 +73,4 @@
             </table>
         </div>
     </div>
-</body>
-
-</html>
+{% endblock %}
