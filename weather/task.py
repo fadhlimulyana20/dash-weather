@@ -32,4 +32,6 @@ def update_weather_data(city):
         weather.wind_speed = data_res["wind_speed"]
         weather.weather_condition = data_res["weather_condition"]
         weather.save()
+    else:
+        Weather.objects.create(**data_res)
     

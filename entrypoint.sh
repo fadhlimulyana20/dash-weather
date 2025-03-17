@@ -14,8 +14,9 @@ if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ] &&
     (python manage.py createsuperuser --noinput --username adminadmin)
 fi
 
-# # Handling Commands
-# python manage.py seed_app_config
+# Handling Commands
+echo "Seed Weather"
+python manage.py seed_weather
 
 # Start Gunicorn
 echo "Starting Gunicorn"
