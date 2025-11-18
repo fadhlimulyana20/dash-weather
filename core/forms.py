@@ -14,6 +14,11 @@ class RegisterForm(UserCreationForm):
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
+        email = cleaned_data.get("email")
+        
+        existing_user = User.objects.filter(email=email).count()
+        if (existing_user > 0):
+            raise forms.ValidationError("User with this email is already existed")
         
         print(password1, password2)
 
